@@ -27,7 +27,7 @@ public class HistorialClinico {
     @ManyToOne
     private Mascota mascota;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     @JoinColumn(name = "cita_id")
     private Cita cita;
 

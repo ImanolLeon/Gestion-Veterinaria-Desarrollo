@@ -26,18 +26,18 @@ public class Cita {
     @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
     private HistorialClinico historialClinico;
     
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name="mascota_id")
     private Mascota mascota;
     
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "veterinario_id")
     private Veterinario veterinario;
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name = "servicio_id")
-    private  Servicio servicio;
+    private Servicio servicio;
 
 
 }
