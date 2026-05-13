@@ -52,11 +52,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
       }
     } catch (JwtException | IllegalArgumentException e) {
-      // Token malformado, expirado o con firma inválida → continúa sin autenticar →
-      // 401 vía EntryPoint
       log.debug("Token JWT inválido: {}", e.getMessage());
     } catch (Exception e) {
-      // Error inesperado del servidor (BD caída, NPE, etc.) → propaga como 500
       log.error("Error interno al procesar autenticación JWT", e);
       throw new ServletException("Error interno al procesar autenticación", e);
     }
