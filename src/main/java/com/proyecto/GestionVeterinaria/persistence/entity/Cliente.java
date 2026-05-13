@@ -14,14 +14,15 @@ import java.util.List;
 @Entity
 @Table
 public class Cliente {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id ;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String name;
+    private String nombres;
 
-    private String lastName;
+    private String apellidos;
 
-    @Column(length = 8,nullable = false)
+    @Column(length = 8, nullable = false)
     private String dni;
 
     private String telefono;
@@ -32,6 +33,6 @@ public class Cliente {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "cliente",cascade = CascadeType.ALL)
-    List<Mascota> mascotas = new ArrayList<>();
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private List<Mascota> mascotas;
 }

@@ -1,10 +1,11 @@
 package com.proyecto.GestionVeterinaria.persistence.entity;
 
+import com.proyecto.GestionVeterinaria.persistence.enumerates.Estado;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,30 +15,29 @@ import java.time.LocalTime;
 @Table
 public class Cita {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private LocalDate fecha;
+    private LocalDateTime fechaHora;
 
-    private LocalTime hora;
+    @Enumerated(EnumType.STRING)
+    private Estado estado;
 
-    private String observaciones;
+    private String notas;
 
     @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
     private HistorialClinico historialClinico;
-    
-    @ManyToOne()
-    @JoinColumn(name="mascota_id")
+
+    @ManyToOne
+    @JoinColumn(name = "mascota_id")
     private Mascota mascota;
-    
-    @ManyToOne()
+
+    @ManyToOne
     @JoinColumn(name = "veterinario_id")
     private Veterinario veterinario;
 
-
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "servicio_id")
     private Servicio servicio;
-
-
 }

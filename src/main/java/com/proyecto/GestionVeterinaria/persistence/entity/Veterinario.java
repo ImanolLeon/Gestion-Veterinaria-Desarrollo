@@ -15,12 +15,13 @@ import java.util.List;
 @Table
 public class Veterinario {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombres;
 
-    private String apellido;
+    private String apellidos;
 
     private String especialidad;
 
@@ -29,7 +30,7 @@ public class Veterinario {
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
-    
+
     @OneToMany(mappedBy = "veterinario", cascade = CascadeType.ALL)
-    List<Cita> citas = new ArrayList<>();
+    private List<Cita> citas;
 }

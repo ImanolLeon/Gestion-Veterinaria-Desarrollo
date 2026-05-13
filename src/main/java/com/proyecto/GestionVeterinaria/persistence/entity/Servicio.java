@@ -14,18 +14,22 @@ import java.util.List;
 @Entity
 @Table
 public class Servicio {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
 
-    private double duracionMin;
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
+
+    private int duracionMin;
 
     private double precio;
 
     private boolean activo;
-    
+
     @OneToMany(mappedBy = "servicio", cascade = CascadeType.ALL)
-    List<Cita> citas = new ArrayList<>();
+    private List<Cita> citas;
 
 }

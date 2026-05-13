@@ -18,39 +18,38 @@ import java.util.Set;
 @Entity
 @Table
 public class Usuario {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    private String email;
+        @Column(unique = true)
+        private String email;
 
-    private String password;
+        private String password;
 
-    @Column(nullable = false,unique = true)
-    private String username;
+        @Column(nullable = false, unique = true)
+        private String username;
 
-    private LocalDate dateRegister;
+        private LocalDate dateRegister;
 
-    private boolean activo;
+        private boolean activo;
 
-    private boolean  isAccountNonExpired;
+        private boolean isAccountNonExpired;
 
-    private boolean  isAccountNonLocked;
+        private boolean isAccountNonLocked;
 
-    private boolean  isCredentialsNonExpired;
+        private boolean isCredentialsNonExpired;
 
-    private boolean  isEnabled;
+        private boolean isEnabled;
 
-    @OneToOne(mappedBy = "usuario",cascade = CascadeType.ALL)
-    private Cliente cliente;
+        @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+        private Cliente cliente;
 
-    @OneToOne(mappedBy = "usuario",cascade = CascadeType.ALL)
-    private Veterinario veterinario;
+        @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+        private Veterinario veterinario;
 
-    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
-            @JoinTable(name = "usuario_rol",
-                    joinColumns = @JoinColumn(name = "usuario_id"),
-                    inverseJoinColumns = @JoinColumn(name = "rol_id")
-            )
-    Set<RolesEntity> roles = new HashSet<>();
+        @ManyToMany(fetch = FetchType.EAGER)
+        @JoinTable(name = "usuario_rol", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "rol_id"))
+        Set<RolesEntity> roles = new HashSet<>();
 
 }

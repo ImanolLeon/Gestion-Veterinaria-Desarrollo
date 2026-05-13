@@ -13,14 +13,15 @@ import java.time.LocalDate;
 @Entity
 @Table
 public class HistorialClinico {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String diagnostico;
 
     private String tratamiento;
 
-    private String observacione;
+    private String observaciones;
 
     private LocalDate fecha;
 

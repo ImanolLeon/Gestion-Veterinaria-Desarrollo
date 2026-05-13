@@ -1,6 +1,6 @@
 package com.proyecto.GestionVeterinaria.persistence.enumerates;
 
-public enum estado {
+public enum Estado {
     PENDIENTE,
     CONFIRMADA,
     EN_CURSO,
