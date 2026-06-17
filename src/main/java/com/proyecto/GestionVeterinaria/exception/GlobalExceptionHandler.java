@@ -3,6 +3,10 @@ package com.proyecto.GestionVeterinaria.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -46,6 +50,24 @@ public class GlobalExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
     return buildError(HttpStatus.BAD_REQUEST,
         "Valor inválido para el parámetro '" + ex.getName() + "': " + ex.getValue(), null);
+  }
+
+  // Credenciales inválidas en el login
+  @ExceptionHandler(BadCredentialsException.class)
+  public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+    return buildError(HttpStatus.UNAUTHORIZED, "Usuario o contraseña incorrectos", null);
+  }
+
+  // Cuenta deshabilitada o bloqueada
+  @ExceptionHandler({ DisabledException.class, LockedException.class })
+  public ResponseEntity<Map<String, Object>> handleAccountStatus(AuthenticationException ex) {
+    return buildError(HttpStatus.FORBIDDEN, "La cuenta no está habilitada para iniciar sesión", null);
+  }
+
+  // Cualquier otro fallo de autenticación
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+    return buildError(HttpStatus.UNAUTHORIZED, "No autenticado", null);
   }
 
   // ResponseStatusException lanzada desde servicios
