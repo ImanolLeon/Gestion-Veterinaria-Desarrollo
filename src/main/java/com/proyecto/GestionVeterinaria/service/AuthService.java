@@ -4,10 +4,12 @@ import com.proyecto.GestionVeterinaria.dto.auth.LoginRequestDto;
 import com.proyecto.GestionVeterinaria.dto.auth.LoginResponseDto;
 import com.proyecto.GestionVeterinaria.dto.auth.RefreshRequestDto;
 import com.proyecto.GestionVeterinaria.dto.auth.RegisterRequestDto;
+import com.proyecto.GestionVeterinaria.persistence.entity.Cliente;
 import com.proyecto.GestionVeterinaria.persistence.entity.RefreshTokenEntity;
 import com.proyecto.GestionVeterinaria.persistence.entity.RolesEntity;
 import com.proyecto.GestionVeterinaria.persistence.entity.Usuario;
 import com.proyecto.GestionVeterinaria.persistence.enumerates.Rol;
+import com.proyecto.GestionVeterinaria.repository.ClienteRepository;
 import com.proyecto.GestionVeterinaria.repository.RolesRepository;
 import com.proyecto.GestionVeterinaria.repository.UsuarioRepository;
 import com.proyecto.GestionVeterinaria.security.JwtUtils;
@@ -19,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -30,6 +33,7 @@ import java.util.Set;
 public class AuthService {
 
   private final UsuarioRepository usuarioRepository;
+  private final ClienteRepository clienteRepository;
   private final RolesRepository rolesRepository;
   private final PasswordEncoder passwordEncoder;
   private final AuthenticationManager authenticationManager;
@@ -37,9 +41,14 @@ public class AuthService {
   private final UserDetailImpl userDetailImpl;
   private final RefreshTokenService refreshTokenService;
 
+  @Transactional
   public LoginResponseDto register(RegisterRequestDto dto) {
     if (usuarioRepository.findByUsername(dto.username()).isPresent()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "El username ya existe");
+    }
+
+    if (clienteRepository.existsByDni(dto.dni())) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI ya está registrado");
     }
 
     RolesEntity clienteRole = rolesRepository.findByRol(Rol.CLIENTE)
@@ -60,6 +69,17 @@ public class AuthService {
         .build();
 
     usuarioRepository.save(usuario);
+
+    Cliente cliente = Cliente.builder()
+        .nombres(dto.nombres())
+        .apellidos(dto.apellidos())
+        .dni(dto.dni())
+        .telefono(dto.telefono())
+        .direccion(dto.direccion())
+        .usuario(usuario)
+        .build();
+
+    clienteRepository.save(cliente);
 
     UserDetails userDetails = userDetailImpl.loadUserByUsername(dto.username());
     String accessToken = jwtUtils.generateToken(userDetails);
