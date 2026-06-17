@@ -19,8 +19,14 @@ public class ServicioController {
   private final ServicioService servicioService;
 
   @GetMapping
-  public List<ServicioResponseDto> findAll() {
+  public List<ServicioResponseDto> findActivos() {
     return servicioService.findActivos();
+  }
+
+  @GetMapping("/all")
+  @PreAuthorize("hasRole('ADMIN')")
+  public List<ServicioResponseDto> findAll() {
+    return servicioService.findAll();
   }
 
   @PostMapping

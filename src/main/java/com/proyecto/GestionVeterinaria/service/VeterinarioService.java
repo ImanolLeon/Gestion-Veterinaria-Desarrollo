@@ -4,14 +4,19 @@ import com.proyecto.GestionVeterinaria.dto.veterinario.DisponibilidadResponseDto
 import com.proyecto.GestionVeterinaria.dto.veterinario.VeterinarioRequestDto;
 import com.proyecto.GestionVeterinaria.dto.veterinario.VeterinarioResponseDto;
 import com.proyecto.GestionVeterinaria.persistence.entity.Cita;
+import com.proyecto.GestionVeterinaria.persistence.entity.RolesEntity;
 import com.proyecto.GestionVeterinaria.persistence.entity.Usuario;
 import com.proyecto.GestionVeterinaria.persistence.entity.Veterinario;
+import com.proyecto.GestionVeterinaria.persistence.enumerates.Rol;
 import com.proyecto.GestionVeterinaria.repository.CitaRepository;
+import com.proyecto.GestionVeterinaria.repository.RolesRepository;
 import com.proyecto.GestionVeterinaria.repository.UsuarioRepository;
 import com.proyecto.GestionVeterinaria.repository.VeterinarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
@@ -19,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +32,8 @@ public class VeterinarioService {
 
   private final VeterinarioRepository veterinarioRepository;
   private final UsuarioRepository usuarioRepository;
+  private final RolesRepository rolesRepository;
+  private final PasswordEncoder passwordEncoder;
   private final CitaRepository citaRepository;
 
   private static final LocalTime HORA_INICIO = LocalTime.of(8, 0);
@@ -44,13 +52,34 @@ public class VeterinarioService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Veterinario no encontrado"));
   }
 
+  @Transactional
   public VeterinarioResponseDto create(VeterinarioRequestDto dto) {
-    Usuario usuario = usuarioRepository.findById(dto.usuarioId())
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+    if (usuarioRepository.findByUsername(dto.username()).isPresent()) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "El username ya existe");
+    }
 
     if (veterinarioRepository.existsByColegiatura(dto.colegiatura())) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "La colegiatura ya está registrada");
     }
+
+    RolesEntity veterinarioRole = rolesRepository.findByRol(Rol.VETERINARIO)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+            "Rol VETERINARIO no encontrado. Verifique los datos iniciales."));
+
+    Usuario usuario = Usuario.builder()
+        .username(dto.username())
+        .email(dto.email())
+        .password(passwordEncoder.encode(dto.password()))
+        .activo(true)
+        .dateRegister(LocalDate.now())
+        .isEnabled(true)
+        .isAccountNonExpired(true)
+        .isAccountNonLocked(true)
+        .isCredentialsNonExpired(true)
+        .roles(Set.of(veterinarioRole))
+        .build();
+
+    usuarioRepository.save(usuario);
 
     Veterinario veterinario = Veterinario.builder()
         .nombres(dto.nombres())
