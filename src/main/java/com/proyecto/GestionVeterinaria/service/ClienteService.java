@@ -3,7 +3,9 @@ package com.proyecto.GestionVeterinaria.service;
 import com.proyecto.GestionVeterinaria.dto.cliente.ClienteResponseDto;
 import com.proyecto.GestionVeterinaria.dto.cliente.ClienteUpdateDto;
 import com.proyecto.GestionVeterinaria.persistence.entity.Cliente;
+import com.proyecto.GestionVeterinaria.persistence.entity.Usuario;
 import com.proyecto.GestionVeterinaria.repository.ClienteRepository;
+import com.proyecto.GestionVeterinaria.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ClienteService {
 
   private final ClienteRepository clienteRepository;
+  private final UsuarioRepository usuarioRepository;
 
   public List<ClienteResponseDto> findAll() {
     return clienteRepository.findAll().stream()
@@ -31,6 +34,14 @@ public class ClienteService {
 
   public ClienteResponseDto findByUsuarioId(Long usuarioId) {
     return clienteRepository.findByUsuarioId(usuarioId)
+        .map(this::toDto)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Perfil de cliente no encontrado"));
+  }
+
+  public ClienteResponseDto findByUsername(String username) {
+    return usuarioRepository.findByUsername(username)
+        .map(Usuario::getId)
+        .flatMap(clienteRepository::findByUsuarioId)
         .map(this::toDto)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Perfil de cliente no encontrado"));
   }

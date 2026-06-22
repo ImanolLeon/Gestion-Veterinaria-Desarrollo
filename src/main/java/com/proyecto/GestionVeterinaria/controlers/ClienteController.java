@@ -6,6 +6,7 @@ import com.proyecto.GestionVeterinaria.service.ClienteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,12 @@ public class ClienteController {
   @PreAuthorize("hasRole('ADMIN')")
   public List<ClienteResponseDto> findAll() {
     return clienteService.findAll();
+  }
+
+  @GetMapping("/me")
+  @PreAuthorize("hasRole('CLIENTE')")
+  public ClienteResponseDto getMyProfile(Authentication authentication) {
+    return clienteService.findByUsername(authentication.getName());
   }
 
   @GetMapping("/{id}")
