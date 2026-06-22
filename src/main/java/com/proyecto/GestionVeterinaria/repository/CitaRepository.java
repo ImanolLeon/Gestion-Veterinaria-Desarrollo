@@ -15,6 +15,9 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
   List<Cita> findByMascotaId(Long mascotaId);
 
+  @Query("SELECT c FROM Cita c WHERE c.mascota.cliente.usuario.username = :username ORDER BY c.fechaHora DESC")
+  List<Cita> findByCliente(@Param("username") String username);
+
   List<Cita> findByVeterinarioId(Long veterinarioId);
 
   List<Cita> findByVeterinarioIdAndEstado(Long veterinarioId, Estado estado);

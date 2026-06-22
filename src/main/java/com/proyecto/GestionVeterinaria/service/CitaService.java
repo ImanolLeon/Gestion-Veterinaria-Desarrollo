@@ -43,6 +43,11 @@ public class CitaService {
     return citaRepository.findByMascotaId(mascotaId).stream().map(this::toDto).toList();
   }
 
+  public List<CitaResponseDto> findMisCitas(String username) {
+    return citaRepository.findByCliente(username)
+        .stream().map(this::toDto).toList();
+  }
+
   @Transactional
   public CitaResponseDto agendar(CitaRequestDto dto) {
     // Business rule: no past dates (also enforced by @Future on DTO)

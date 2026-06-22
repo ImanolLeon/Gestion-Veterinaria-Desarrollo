@@ -7,6 +7,8 @@ import com.proyecto.GestionVeterinaria.service.CitaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +23,12 @@ public class CitaController {
   @GetMapping
   public List<CitaResponseDto> findAll() {
     return citaService.findAll();
+  }
+
+  @GetMapping("/mis-citas")
+  @PreAuthorize("hasRole('CLIENTE')")
+  public List<CitaResponseDto> misCitas(Authentication authentication) {
+    return citaService.findMisCitas(authentication.getName());
   }
 
   @PostMapping
