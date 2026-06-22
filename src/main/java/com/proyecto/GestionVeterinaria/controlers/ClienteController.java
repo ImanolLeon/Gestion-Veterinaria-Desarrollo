@@ -13,26 +13,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/clientes")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Asegura que Angular pueda consumir el endpoint sin bloqueos de CORS
 public class ClienteController {
 
-  private final ClienteService clienteService;
+    private final ClienteService clienteService;
 
-  @GetMapping
-  @PreAuthorize("hasRole('ADMIN')")
-  public List<ClienteResponseDto> findAll() {
-    return clienteService.findAll();
-  }
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<ClienteResponseDto> findAll() {
+        return clienteService.findAll();
+    }
 
-  @GetMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN') or @clienteSecurityService.isOwner(#id, authentication.name)")
-  public ClienteResponseDto findById(@PathVariable Long id) {
-    return clienteService.findById(id);
-  }
+    // NUEVO ENDPOINT: Resuelve la ruta exacta /api/clientes/perfil/{username} que Angular necesita
+    @GetMapping("/perfil/{username}")
+    @PreAuthorize("hasRole('ADMIN') or #username == authentication.name")
+    public ClienteResponseDto findByUsername(@PathVariable String username) {
+        return clienteService.findByUsername(username);
+    }
 
-  @PutMapping("/{id}")
-  @PreAuthorize("hasRole('ADMIN') or @clienteSecurityService.isOwner(#id, authentication.name)")
-  public ClienteResponseDto update(@PathVariable Long id,
-      @Valid @RequestBody ClienteUpdateDto dto) {
-    return clienteService.update(id, dto);
-  }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @clienteSecurityService.isOwner(#id, authentication.name)")
+    public ClienteResponseDto findById(@PathVariable Long id) {
+        return clienteService.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @clienteSecurityService.isOwner(#id, authentication.name)")
+    public ClienteResponseDto update(@PathVariable Long id,
+        @Valid @RequestBody ClienteUpdateDto dto) {
+        return clienteService.update(id, dto);
+    }
 }

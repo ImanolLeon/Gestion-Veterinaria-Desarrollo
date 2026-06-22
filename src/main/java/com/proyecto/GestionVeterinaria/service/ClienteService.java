@@ -35,6 +35,15 @@ public class ClienteService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Perfil de cliente no encontrado"));
   }
 
+  // =========================================================================
+  // NUEVO MÉTODO: Resuelve la búsqueda por el string 'username' desde Angular
+  // =========================================================================
+  public ClienteResponseDto findByUsername(String username) {
+    return clienteRepository.findByUsuarioUsername(username)
+        .map(this::toDto)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado con el usuario: " + username));
+  }
+
   public ClienteResponseDto update(Long id, ClienteUpdateDto dto) {
     Cliente cliente = clienteRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado"));
