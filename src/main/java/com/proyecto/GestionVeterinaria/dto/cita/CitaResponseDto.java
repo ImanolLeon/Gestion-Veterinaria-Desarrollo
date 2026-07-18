@@ -1,6 +1,8 @@
 package com.proyecto.GestionVeterinaria.dto.cita;
 
+import com.proyecto.GestionVeterinaria.persistence.enumerates.CanceladoPor;
 import com.proyecto.GestionVeterinaria.persistence.enumerates.Estado;
+import com.proyecto.GestionVeterinaria.persistence.enumerates.MetodoPago;
 
 import java.time.LocalDateTime;
 
@@ -15,5 +17,10 @@ public record CitaResponseDto(
     String veterinarioNombres,
     Long servicioId,
     String servicioNombre,
-    double servicioPrecio) {
+    double servicioPrecio,
+    CanceladoPor canceladoPor,
+    LocalDateTime fechaCancelacion,
+    boolean pagado,
+    MetodoPago metodoPago,
+    Double montoPago) {
 }

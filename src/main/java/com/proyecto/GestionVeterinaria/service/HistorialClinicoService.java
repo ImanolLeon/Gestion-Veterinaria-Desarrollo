@@ -11,12 +11,15 @@ import com.proyecto.GestionVeterinaria.repository.CitaRepository;
 import com.proyecto.GestionVeterinaria.repository.HistorialClinicoRepository;
 import com.proyecto.GestionVeterinaria.repository.MascotaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +29,9 @@ public class HistorialClinicoService {
   private final HistorialClinicoRepository historialClinicoRepository;
   private final CitaRepository citaRepository;
   private final MascotaRepository mascotaRepository;
+
+  @Value("${app.historial.edit-window-hours:48}")
+  private long editWindowHours;
 
   public List<HistorialResponseDto> findByMascota(Long mascotaId) {
     mascotaRepository.findByIdAndActivoTrue(mascotaId)
@@ -58,7 +64,9 @@ public class HistorialClinicoService {
         .diagnostico(dto.diagnostico())
         .tratamiento(dto.tratamiento())
         .observaciones(dto.observaciones())
+        .peso(dto.pesoKg())
         .fecha(LocalDate.now())
+        .creadoEn(LocalDateTime.now())
         .build();
 
     return toDto(historialClinicoRepository.save(historial));
@@ -69,9 +77,16 @@ public class HistorialClinicoService {
     HistorialClinico historial = historialClinicoRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Historial no encontrado"));
 
+    if (historial.getCreadoEn() != null
+        && Duration.between(historial.getCreadoEn(), LocalDateTime.now()).toHours() > editWindowHours) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "La ventana de edición de " + editWindowHours + "h para este historial ha expirado");
+    }
+
     historial.setDiagnostico(dto.diagnostico());
     historial.setTratamiento(dto.tratamiento());
     historial.setObservaciones(dto.observaciones());
+    historial.setPeso(dto.pesoKg());
 
     return toDto(historialClinicoRepository.save(historial));
   }
@@ -98,6 +113,7 @@ public class HistorialClinicoService {
         h.getObservaciones(),
         h.getFecha(),
         vetNombres,
-        servicioNombre);
+        servicioNombre,
+        h.getPeso());
   }
 }

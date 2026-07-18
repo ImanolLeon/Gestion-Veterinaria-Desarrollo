@@ -23,12 +23,7 @@ public class ReporteService {
   public List<CitasPorVeterinarioDto> citasPorVeterinario(Long veterinarioId,
       LocalDateTime desde,
       LocalDateTime hasta) {
-    List<Cita> citas;
-    if (veterinarioId != null) {
-      citas = citaRepository.findByVeterinarioAndDateRange(veterinarioId, desde, hasta);
-    } else {
-      citas = citaRepository.findByFechaHoraBetween(desde, hasta);
-    }
+    List<Cita> citas = buscarCitas(veterinarioId, desde, hasta);
 
     Map<Long, List<Cita>> byVet = citas.stream()
         .filter(c -> c.getVeterinario() != null)
@@ -49,10 +44,12 @@ public class ReporteService {
     }).toList();
   }
 
-  public List<ServicioPopularDto> serviciosPopulares() {
-    List<Cita> todasLasCitas = citaRepository.findAll();
+  public List<ServicioPopularDto> serviciosPopulares(Long veterinarioId,
+      LocalDateTime desde,
+      LocalDateTime hasta) {
+    List<Cita> citas = buscarCitas(veterinarioId, desde, hasta);
 
-    Map<Long, List<Cita>> byServicio = todasLasCitas.stream()
+    Map<Long, List<Cita>> byServicio = citas.stream()
         .filter(c -> c.getServicio() != null && c.getEstado() != Estado.CANCELADA)
         .collect(Collectors.groupingBy(c -> c.getServicio().getId()));
 
@@ -64,5 +61,22 @@ public class ReporteService {
         })
         .sorted((a, b) -> Long.compare(b.totalCitas(), a.totalCitas()))
         .toList();
+  }
+
+  /**
+   * El rango es inclusivo en ambos extremos. Un veterinarioId nulo abarca a todos
+   * los veterinarios, y un rango incompleto (desde o hasta nulos) abarca todas las
+   * fechas.
+   */
+  private List<Cita> buscarCitas(Long veterinarioId, LocalDateTime desde, LocalDateTime hasta) {
+    boolean conRango = desde != null && hasta != null;
+    if (veterinarioId != null) {
+      return conRango
+          ? citaRepository.findByVeterinarioIdAndFechaHoraBetween(veterinarioId, desde, hasta)
+          : citaRepository.findByVeterinarioId(veterinarioId);
+    }
+    return conRango
+        ? citaRepository.findByFechaHoraBetween(desde, hasta)
+        : citaRepository.findAll();
   }
 }

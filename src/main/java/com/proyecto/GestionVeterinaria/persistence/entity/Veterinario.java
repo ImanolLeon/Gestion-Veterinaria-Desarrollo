@@ -27,6 +27,9 @@ public class Veterinario {
 
     private String colegiatura;
 
+    @Builder.Default
+    private boolean activo = true;
+
     @OneToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

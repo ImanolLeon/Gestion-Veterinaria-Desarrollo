@@ -52,4 +52,16 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
       """)
   List<Cita> findByFechaHoraBetween(@Param("desde") LocalDateTime desde,
       @Param("hasta") LocalDateTime hasta);
+
+  // Rango inclusivo y sin filtrar estados: los reportes necesitan contar tambien
+  // las citas CANCELADA, a diferencia de findByVeterinarioAndDateRange.
+  @Query("""
+      SELECT c FROM Cita c
+      WHERE c.veterinario.id = :vetId
+        AND c.fechaHora >= :desde
+        AND c.fechaHora <= :hasta
+      """)
+  List<Cita> findByVeterinarioIdAndFechaHoraBetween(@Param("vetId") Long vetId,
+      @Param("desde") LocalDateTime desde,
+      @Param("hasta") LocalDateTime hasta);
 }

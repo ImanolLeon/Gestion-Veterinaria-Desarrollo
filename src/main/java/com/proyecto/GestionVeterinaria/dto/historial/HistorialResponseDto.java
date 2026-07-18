@@ -12,5 +12,6 @@ public record HistorialResponseDto(
     String observaciones,
     LocalDate fecha,
     String veterinarioNombres,
-    String servicioNombre) {
+    String servicioNombre,
+    Double pesoKg) {
 }

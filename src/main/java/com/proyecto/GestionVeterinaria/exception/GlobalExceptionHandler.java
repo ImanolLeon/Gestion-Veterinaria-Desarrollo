@@ -3,6 +3,7 @@ package com.proyecto.GestionVeterinaria.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -68,6 +69,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(AuthenticationException.class)
   public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
     return buildError(HttpStatus.UNAUTHORIZED, "No autenticado", null);
+  }
+
+  // @PreAuthorize deniega el acceso (rol insuficiente o no es el dueño del recurso)
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+    return buildError(HttpStatus.FORBIDDEN, "No tiene permisos para realizar esta acción", null);
   }
 
   // ResponseStatusException lanzada desde servicios

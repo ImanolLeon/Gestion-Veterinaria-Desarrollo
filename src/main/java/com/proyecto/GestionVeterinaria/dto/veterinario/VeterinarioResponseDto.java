@@ -7,5 +7,6 @@ public record VeterinarioResponseDto(
     String especialidad,
     String colegiatura,
     String email,
-    String username) {
+    String username,
+    boolean activo) {
 }

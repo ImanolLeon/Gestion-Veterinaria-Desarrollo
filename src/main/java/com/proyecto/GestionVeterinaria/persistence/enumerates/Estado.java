@@ -3,7 +3,7 @@ package com.proyecto.GestionVeterinaria.persistence.enumerates;
 public enum Estado {
     PENDIENTE,
     CONFIRMADA,
-    EN_CURSO,
+    EN_PROGRESO,
     COMPLETADA,
     CANCELADA
 }

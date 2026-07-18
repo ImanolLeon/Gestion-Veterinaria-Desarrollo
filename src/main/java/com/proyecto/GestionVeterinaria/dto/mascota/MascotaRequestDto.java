@@ -1,5 +1,6 @@
 package com.proyecto.GestionVeterinaria.dto.mascota;
 
+import com.proyecto.GestionVeterinaria.persistence.enumerates.Sexo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,5 +13,7 @@ public record MascotaRequestDto(
     @NotBlank String especie,
     String raza,
     LocalDate fechaNacimiento,
-    @Positive double pesoKg) {
+    @Positive double pesoKg,
+    Sexo sexo,
+    Boolean esterilizado) {
 }

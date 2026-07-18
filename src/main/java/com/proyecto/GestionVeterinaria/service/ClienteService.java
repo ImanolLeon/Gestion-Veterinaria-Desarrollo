@@ -46,18 +46,19 @@ public class ClienteService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Perfil de cliente no encontrado"));
   }
 
-  public ClienteResponseDto update(Long id, ClienteUpdateDto dto) {
+  public ClienteResponseDto update(Long id, ClienteUpdateDto dto, boolean isAdmin) {
     Cliente cliente = clienteRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado"));
 
-    // Check DNI uniqueness if it changed
-    if (!cliente.getDni().equals(dto.dni()) && clienteRepository.existsByDni(dto.dni())) {
+    // El DNI solo lo puede cambiar un ADMIN; para CLIENTE se ignora el valor recibido
+    String nuevoDni = isAdmin ? dto.dni() : cliente.getDni();
+    if (!cliente.getDni().equals(nuevoDni) && clienteRepository.existsByDni(nuevoDni)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "El DNI ya está registrado");
     }
 
     cliente.setNombres(dto.nombres());
     cliente.setApellidos(dto.apellidos());
-    cliente.setDni(dto.dni());
+    cliente.setDni(nuevoDni);
     cliente.setTelefono(dto.telefono());
     cliente.setDireccion(dto.direccion());
 

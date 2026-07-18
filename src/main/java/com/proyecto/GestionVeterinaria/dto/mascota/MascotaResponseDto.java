@@ -1,5 +1,7 @@
 package com.proyecto.GestionVeterinaria.dto.mascota;
 
+import com.proyecto.GestionVeterinaria.persistence.enumerates.Sexo;
+
 import java.time.LocalDate;
 
 public record MascotaResponseDto(
@@ -10,5 +12,7 @@ public record MascotaResponseDto(
     LocalDate fechaNacimiento,
     double pesoKg,
     Long clienteId,
-    String clienteNombres) {
+    String clienteNombres,
+    Sexo sexo,
+    boolean esterilizado) {
 }

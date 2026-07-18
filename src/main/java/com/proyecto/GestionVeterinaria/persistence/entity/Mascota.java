@@ -1,5 +1,6 @@
 package com.proyecto.GestionVeterinaria.persistence.entity;
 
+import com.proyecto.GestionVeterinaria.persistence.enumerates.Sexo;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,6 +31,13 @@ public class Mascota {
     private double peso_kg;
 
     private boolean activo;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Sexo sexo = Sexo.DESCONOCIDO;
+
+    @Builder.Default
+    private boolean esterilizado = false;
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")

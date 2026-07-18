@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,6 +25,10 @@ public class HistorialClinico {
     private String observaciones;
 
     private LocalDate fecha;
+
+    private LocalDateTime creadoEn;
+
+    private Double peso;
 
     @ManyToOne
     private Mascota mascota;

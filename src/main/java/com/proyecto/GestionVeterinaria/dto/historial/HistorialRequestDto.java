@@ -7,5 +7,6 @@ public record HistorialRequestDto(
     @NotNull Long mascotaId,
     String diagnostico,
     String tratamiento,
-    String observaciones) {
+    String observaciones,
+    Double pesoKg) {
 }
